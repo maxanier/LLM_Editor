@@ -1,0 +1,14 @@
+# 1. Introduction
+This is an awesome text containng some errors including, incorrect punctuation
+and some unexpected line
+breaks.
+By processing dis, we should get a improved version.
+
+# 2. Sections
+By marking headlines with a hastag we can
+get the script to process section by section.
+It should handle numbers like 10.4 or 802.11ac
+acceptable well.
+
+# V. Another section
+Sometimes there are ROMAN numerals.

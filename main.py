@@ -63,8 +63,8 @@ def main():
     formatted_processed_chunks = [format_text_with_hashtag(chunk) for chunk in processed_chunks]
 
     # Join the processed chunks back together
-    formatted_text = "\n".join(formatted_chunks) + "\n"
-    processed_text = "\n".join(formatted_processed_chunks) + "\n"
+    formatted_text = "\n\n".join(formatted_chunks) + "\n"
+    processed_text = "\n\n".join(formatted_processed_chunks) + "\n"
 
     # Run a difflib unified difference on the original and processed text
     diff_result = unified_diff(formatted_text, processed_text)+'\n'
