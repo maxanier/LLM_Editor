@@ -14,16 +14,26 @@ def format_text_with_hashtag(text_chunk):
         lines = text_chunk.split('\n', 1)
         if len(lines) > 1:
             # Process the rest of the chunk, but keep the first part (hashtag line) intact
-            return format_text(lines[1])
+            return clean_and_break_text(lines[1])
         else:
             return ""  # Return the chunk as is if there's no additional content
     # Otherwise, format the entire text chunk
-    return format_text(text_chunk)
+    return clean_and_break_text(text_chunk)
 
 
-def format_text(text):
-    # Remove arbitrary line breaks
+def fix_broken_tex_output(text):
+    text = text.replace("??"," Figure 1") # References may be broken when figures are not included in PDF -> Use placeholder
+    return text
+
+def clean_and_break_text(text):
     text = text.replace("Fig.", "Figure")
+    text = text.replace("i.e.", "that is")
+    text = text.replace("e.g.", "for example")
+    return format_linebreaks(text)
+
+def format_linebreaks(text):
+
+    # Remove arbitrary line breaks
     text = re.sub(r'\n+', ' ', text)
 
     # Split text into sentences

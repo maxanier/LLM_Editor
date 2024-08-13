@@ -1,7 +1,7 @@
 import os.path
 import argparse
-from llm import LLM
-from text_utils import split_into_chunks, format_text_with_hashtag, unified_diff
+from src.llm import LLM
+from src.text_utils import *
 
 
 # Paths to the original and processed files
@@ -26,17 +26,21 @@ def main():
     parser.add_argument("--url", help="The URL of the Ollama API server. Default: http://localhost:11434")
     parser.add_argument("--model", help="The name of the model setup to use. Default: karen")
     parser.add_argument("--inline", help="Do not print progress, but only output final diff", action='store_true')
+    parser.add_argument("--input", help="Input file. Default: 'inout/input.txt'")
+    parser.add_argument("--dryrun", help="Only run the text processing but skip the actual llm interaction for debugging", action='store_true')
 
     args = parser.parse_args()
 
     url = args.url or "http://localhost:11434"
     model_name = args.model or "karen"
     inline = args.inline or False
+    dryrun = args.dryrun or False
+    input = args.input or os.path.join(folder_path, input_file)
 
-    llm = LLM(url, model_name)
+    llm = LLM(None if dryrun else url, model_name)
 
     # Load text from the original .txt file
-    original_text = load_text(os.path.join(folder_path, input_file))
+    original_text = load_text(input)
 
     # Split the text into chunks based on lines that start with a hashtag and format text
     chunks = split_into_chunks(original_text)

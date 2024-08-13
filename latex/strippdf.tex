@@ -1,0 +1,49 @@
+%-------------------------------------------
+% Can be used to strip the PDF of figures, math, and anything else that breaks textflow.
+% Allows easier text extraction.
+% Include just above \begin{document} by \input{strippdf}.
+%
+% Probably want to use [draft,onecolumn] for your document class
+%
+%--------------------
+% Remove general information
+\date{}
+\pagestyle{empty}
+\renewcommand\author[1]{}
+\renewcommand\markboth[2]{}
+
+% Remove sections and floats
+\renewcommand\section[1]{~\\\# #1\\}
+\renewcommand\subsection[1]{~\\\# #1\\}
+\usepackage[nolists,nomarkers]{endfloat}
+\renewcommand{\processdelayedfloats}{}
+
+
+% Remove math and other environments
+\usepackage{environ}
+\def\disableEquationEnv#1{%                      for math environments
+	\expandafter\let\csname #1\endcsname\relax
+	\expandafter\let\csname end#1\endcsname\relax
+	\NewEnviron{#1}{ \textless{}equation\textgreater{} }%
+}
+\def\disableGeneralEnv#1{%                      for math environments
+	\expandafter\let\csname #1\endcsname\relax
+	\expandafter\let\csname end#1\endcsname\relax
+	\NewEnviron{#1}{  }%
+}
+
+\catcode`$=\active
+\makeatletter
+\def${%                            TeX math shift
+	\@ifnextchar${\killB}{\killA}%
+}%
+\makeatother
+\def\killA#1${\textless{}equation\textgreater{}}%     TeX inline math
+\def\killB$#1$${\textless{}equation\textgreater{}}%   TeX display math
+
+
+\disableEquationEnv{displaymath}
+\disableEquationEnv{equation}
+\disableGeneralEnv{IEEEkeywords}
+\disableGeneralEnv{IEEEbiography}
+\disableGeneralEnv{thebibliography}
