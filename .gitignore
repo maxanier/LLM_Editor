@@ -1,0 +1,5 @@
+venv/
+inout/
+!inout/input.example.txt
+.idea/
+__pycache__/
