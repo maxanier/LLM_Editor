@@ -1,4 +1,5 @@
 import json
+import time
 from dataclasses import dataclass
 from ollama import Client
 
@@ -28,8 +29,18 @@ class LLM:
     def send_to_llm(self, chunk: str) -> str:
         if self.client is None:
             return chunk
+        if not chunk or chunk.isspace():
+            return chunk
         response = self.client.generate(model=self.model_config.model_name, prompt=chunk,
                                         system=self.model_config.system_prompt, context=self.context, keep_alive=0,
                                         options={'num_predict': -1})
-        self.context = response["context"]
+        time.sleep(1)
+        if response["done_reason"] != "stop":
+            print("Error in processing by LLM. Stop Reason: "+response["done_reason"])
+            print("Chunk:")
+            print(chunk)
+            print("Response:")
+            print(response)
+            raise Exception("Error in processing by LLM")
+        self.context = response["context"] if "context" in response else None
         return response['response']

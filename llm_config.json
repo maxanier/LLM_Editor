@@ -10,6 +10,11 @@
         "system_prompt": "Edit the following for spelling and grammar mistakes: "
     },
     {
+        "name": "creative_karen",
+        "model_name": "airat/karen-the-editor-v2-creative",
+        "system_prompt": "Edit the following for spelling and grammar mistakes: "
+    },
+    {
         "name": "llama_spelling",
         "model_name": "llama3.1",
         "system_prompt": "You are a scientific text editor. You do not comment, but only correct spelling errors. Return only the edited text. Do not change anything but spelling mistakes. Output should be the edited text alone, without any additional comments or feedback."

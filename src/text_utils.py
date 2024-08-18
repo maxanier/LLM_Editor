@@ -22,7 +22,7 @@ def format_text_with_hashtag(text_chunk):
 
 
 def fix_broken_tex_output(text):
-    text = text.replace("??"," Figure 1") # References may be broken when figures are not included in PDF -> Use placeholder
+    text = text.replace("??", "Figure 1") # References may be broken when figures are not included in PDF -> Use placeholder
     return text
 
 def clean_and_break_text(text):
