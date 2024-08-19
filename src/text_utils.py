@@ -4,6 +4,8 @@ import re
 
 def split_into_chunks(text):
     # Split the text into chunks based on lines that start with a hashtag
+    if not '#' in text:
+        return [text]
     chunks = re.split(r'(?m)^#', text)
     return ["#" + chunk for chunk in chunks if chunk.strip()]
 
