@@ -17,6 +17,8 @@ class LLM:
         self.client = Client(host=url) if url else None
         self.context = None
         self.model_config: ModelConfig = self.load_config(config_name)
+        if not self.model_config:
+            raise Exception("Model config "+config_name+ " does not exist")
 
     @staticmethod
     def load_config(name: str) -> ModelConfig:
