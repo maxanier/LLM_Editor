@@ -3,3 +3,4 @@ inout/*
 !inout/input.example.txt
 .idea/
 __pycache__/
+llm_config.json

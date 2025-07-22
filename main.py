@@ -10,6 +10,7 @@ input_file = 'input.txt'
 formatted_input_file = 'formatted_input.txt'
 output_file = 'output.txt'
 diff_file = 'diff.txt'
+live_diff_file = 'live_diff.txt'
 
 
 def load_text(file_path):
@@ -28,6 +29,8 @@ def main():
     parser.add_argument("--inline", help="Do not print progress, but only output final diff", action='store_true')
     parser.add_argument("--input", help="Input file. Default: 'inout/input.txt'")
     parser.add_argument("--dryrun", help="Only run the text processing but skip the actual llm interaction for debugging", action='store_true')
+    parser.add_argument("--latex", help="Assume the given text is LaTeX. One sentence per line.", action="store_true")
+    parser.add_argument("--live", help="Output live diff during chunk processing", action="store_true")
 
     args = parser.parse_args()
 
@@ -36,6 +39,8 @@ def main():
     inline = args.inline or False
     dryrun = args.dryrun or False
     input = args.input or os.path.join(folder_path, input_file)
+    latex = args.latex or False
+    live = args.live or False
 
     llm = LLM(None if dryrun else url, model_name)
 
@@ -44,7 +49,12 @@ def main():
 
     # Split the text into chunks based on lines that start with a hashtag and format text
     chunks = split_into_chunks(original_text)
-    formatted_chunks = [format_text_with_hashtag(chunk) for chunk in chunks]
+    chunks = split_long_chunks_at_paragraphs(chunks, llm.model_config.max_chars)
+    formatted_chunks = [format_text_with_hashtag(chunk, latex) for chunk in chunks]
+
+    # Clear live diff file
+    if live:
+        save_text(os.path.join(folder_path, live_diff_file), "")
 
     # Process each chunk with LLM
     if not inline:
@@ -52,19 +62,35 @@ def main():
     #processed_chunks = [llm.send_to_llm(chunk) for chunk in formatted_chunks]
     processed_chunks = []
     num_chunks = len(formatted_chunks)
-    for i, chunk in enumerate(formatted_chunks):
-        processed_chunk = llm.send_to_llm(chunk)
-        processed_chunks.append(processed_chunk)
-        # Print a progress meter
+    try:
+        for i, chunk in enumerate(formatted_chunks):
+            processed_chunk = llm.send_to_llm(chunk)
+            processed_chunks.append(processed_chunk)
+            # Print a progress meter
+            if not inline:
+                print(f"Progress: [{i + 1} / {num_chunks}] ({((i + 1) / num_chunks) * 100:.2f}% complete)")
+            if live:
+                formatted_processed_chunk = format_text_with_hashtag(processed_chunk, latex)
+                diff_part = unified_diff(chunk, formatted_processed_chunk) + '\n'
+                with open(os.path.join(folder_path, live_diff_file), 'a', encoding='utf-8') as file:
+                    file.write(diff_part)
+
+
+    except KeyboardInterrupt:
         if not inline:
-            print(f"Progress: [{i + 1} / {num_chunks}] ({((i + 1) / num_chunks) * 100:.2f}% complete)")
+            print("Keyboard interrupt received. Skipping remaining chunks...")
+    except Exception as e:
+        if not inline:
+            print("Exception: "+str(e))
+        else:
+            raise e
     if not inline:
         print("Completed LLM processing")
 
 
 
     # Format output again
-    formatted_processed_chunks = [format_text_with_hashtag(chunk) for chunk in processed_chunks]
+    formatted_processed_chunks = [format_text_with_hashtag(chunk, latex) for chunk in processed_chunks]
 
     # Join the processed chunks back together
     formatted_text = "\n\n".join(formatted_chunks) + "\n"

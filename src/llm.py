@@ -10,6 +10,7 @@ class ModelConfig:
     name: str
     model_name: str
     system_prompt: str
+    max_chars: int = 1000 #Try to reduce chunk size to less than this
 
 
 class LLM:

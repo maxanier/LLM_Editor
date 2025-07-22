@@ -6,7 +6,7 @@ Not perfect, but helpful.
 
 ## Usage
 1. You need an [ollama](https://github.com/ollama/ollama/) instance running. Adjust the end-point if necessary
-2. Make sure you have to desired model installed
+2. Copy `llm_config_example.json` to `llm_config.json` and adjust based on your installed models
 3. Save the text you want to check in `inout/input.txt`. (See `inout/input.example.txt`)
 4. If it is a long text, add lines starting with `#` to break the text into chunks. (E.g. preprend headings with `#`)
 5. Run script (see `python main.py --help`)
@@ -19,9 +19,17 @@ Most concise results are achieved with `karen` so far.
 
 ## Latex
 If you are writing a latex article and want to process the text, you need to somehow extract it from there.
-I haven't found a good way yet. 
+I haven't found a good way yet.
+Either go via PDF to get something close to the actual output or use LaTeX code directly if the model can work with that.
 
+### Via PDF
 My current approach is the following:
 1. Create a PDF that is as "clean" as possible (no figures, no equations, single-column). See `/latex` for this.
-2. Use `extract_pdf.py` to get the text
+2. Use `extract_pdf.py` to get the text into `input.txt`
 3. Some manual fine-tuning
+
+### Via LaTeX
+1. Put LaTeX code (only document body containing text and maybe figures and equations) in `inout/input.tex`
+2. Run `extract_latex.py` to get the text into `input.txt`
+3. Some manual fine-tuning
+
