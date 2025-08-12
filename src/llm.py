@@ -1,6 +1,8 @@
 import json
 import time
 from dataclasses import dataclass
+from typing import Optional, Union, Literal
+
 from ollama import Client
 
 
@@ -11,6 +13,7 @@ class ModelConfig:
     model_name: str
     system_prompt: str
     max_chars: int = 1000 #Try to reduce chunk size to less than this
+    think: Optional[Union[bool, Literal['low', 'medium', 'high']]] = None
 
 
 class LLM:
@@ -35,8 +38,8 @@ class LLM:
         if not chunk or chunk.isspace():
             return chunk
         response = self.client.generate(model=self.model_config.model_name, prompt=chunk,
-                                        system=self.model_config.system_prompt, context=self.context, keep_alive=0,
-                                        options={'num_predict': -1})
+                                        system=self.model_config.system_prompt, context=self.context, think=self.model_config.think, keep_alive=0,
+                                        options={'num_predict': -1, 'think':False})
         time.sleep(1)
         if response["done_reason"] != "stop":
             print("Error in processing by LLM. Stop Reason: "+response["done_reason"])
