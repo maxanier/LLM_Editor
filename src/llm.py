@@ -32,13 +32,18 @@ class LLM:
             model_configs = {model["name"]: ModelConfig(**model) for model in config_data}
             return model_configs.get(name)
 
-    def send_to_llm(self, chunk: str) -> str:
+    def send_to_llm(self, chunk: str, will_continue: bool = False) -> str:
+        """
+        :param chunk: The request text
+        :param will_continue: Whether a consecutive request will be sent and the model should remain loaded
+        :return: The response text
+        """
         if self.client is None:
             return chunk
         if not chunk or chunk.isspace():
             return chunk
         response = self.client.generate(model=self.model_config.model_name, prompt=chunk,
-                                        system=self.model_config.system_prompt, context=self.context, think=self.model_config.think, keep_alive=0,
+                                        system=self.model_config.system_prompt, context=self.context, think=self.model_config.think, keep_alive=20 if will_continue else 0,
                                         options={'num_predict': -1, 'think':False})
         time.sleep(1)
         if response["done_reason"] != "stop":

@@ -64,7 +64,7 @@ def main():
     num_chunks = len(formatted_chunks)
     try:
         for i, chunk in enumerate(formatted_chunks):
-            processed_chunk = llm.send_to_llm(chunk)
+            processed_chunk = llm.send_to_llm(chunk, will_continue=i +1 < num_chunks)
             processed_chunks.append(processed_chunk)
             # Print a progress meter
             if not inline:
